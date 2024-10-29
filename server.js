@@ -2,10 +2,8 @@ const gateway = require('fast-gateway');
 const path = require('path');
 const express = require('express');
 
-// Usa el puerto de Render o el puerto 9005 en caso de no estar definido
-const port = process.env.PORT || 9005;
+const port = 9005;
 
-// Configura el gateway con tus rutas
 const server = gateway({
     routes: [
         {
@@ -26,21 +24,10 @@ const server = gateway({
     ]
 });
 
-// Configura el servidor Express
-const app = express();
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Define la ruta raíz para servir un archivo index.html, si existe
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Inicia el gateway y Express en el mismo puerto
-server.start(port).then(() => {
-    console.log(`API Gateway ejecutándose en el puerto: ${port}`);
-
-    // Inicia el servidor Express en el mismo puerto
-    app.listen(port, () => {
-        console.log(`Servidor de archivos estáticos ejecutándose en el puerto: ${port}`);
-    });
+// Iniciar el gateway y servir la interfaz después de su inicio
+server.start(port).then((gatewayServer) => {
+    console.log('API Gateway ejecutándose en el puerto: ' + port);
+    
+    // Servir archivos estáticos con Express
+    gatewayServer.app.use(express.static(path.join(__dirname, 'public')));
 }).catch(console.error);
