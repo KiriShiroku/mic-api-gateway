@@ -24,10 +24,10 @@ const server = gateway({
     ]
 });
 
-// Usar express para servir la interfaz
-server.getServer().use(express.static(path.join(__dirname, 'public')));
-
-// Iniciar el gateway en el puerto 9005
-server.start(port).then(server => {
+// Iniciar el gateway y servir la interfaz después de su inicio
+server.start(port).then((gatewayServer) => {
     console.log('API Gateway ejecutándose en el puerto: ' + port);
-});
+    
+    // Servir archivos estáticos con Express
+    gatewayServer.app.use(express.static(path.join(__dirname, 'public')));
+}).catch(console.error);
