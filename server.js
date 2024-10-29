@@ -26,15 +26,21 @@ const server = gateway({
     ]
 });
 
-// Inicia el gateway y sirve archivos estáticos en el mismo servidor
-server.start(port).then((gatewayServer) => {
+// Configura el servidor Express
+const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Define la ruta raíz para servir un archivo index.html, si existe
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Inicia el gateway y Express en el mismo puerto
+server.start(port).then(() => {
     console.log(`API Gateway ejecutándose en el puerto: ${port}`);
 
-    // Configura el uso de archivos estáticos en la raíz del servidor
-    gatewayServer.app.use(express.static(path.join(__dirname, 'public')));
-
-    // Define la ruta raíz para servir un archivo index.html, si existe
-    gatewayServer.app.get('/', (req, res) => {
-        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    // Inicia el servidor Express en el mismo puerto
+    app.listen(port, () => {
+        console.log(`Servidor de archivos estáticos ejecutándose en el puerto: ${port}`);
     });
 }).catch(console.error);
